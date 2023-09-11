@@ -4,10 +4,10 @@ using UserManagementService.Models;
 
 namespace UserManagementService.DbContext;
 
-public class AppDbContext : IdentityDbContext<User, Role, string>
+public class UserManagementDbContext : IdentityDbContext<User, Role, string>
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite(@"Data Source=app.db;");
+        optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=UserManagementDb;Username=postgres;Password=nigaR123");
     }
 }

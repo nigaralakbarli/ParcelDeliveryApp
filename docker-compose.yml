@@ -1,0 +1,28 @@
+version: '3'
+services:
+  user-management:
+    build:
+      context: ./UserManagementService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    networks:
+      - my-network
+  order-service:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    networks:
+      - my-network
+  delivery-service:
+    build:
+      context: ./DeliveryService
+      dockerfile: Dockerfile
+    ports:
+      - "8082:80"
+    networks:
+      - my-network
+networks:
+  my-network:

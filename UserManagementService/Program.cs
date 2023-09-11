@@ -59,9 +59,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenOption>();
 
 builder.Services.Configure<TokenOption>(builder.Configuration.GetSection("TokenOption"));
-builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContext<UserManagementDbContext>();
 builder.Services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<AppDbContext>()
+                .AddEntityFrameworkStores<UserManagementDbContext>()
                 .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
