@@ -1,16 +1,15 @@
-﻿using OrderService.Dtos.Order;
+﻿using OrderMicroservice.Dtos.Order;
 
-namespace OrderService.Services.Abstraction;
+namespace OrderMicroservice.Services.Abstraction;
 
-public interface IOrderService
+public interface IOrdersService
 {
-    Task<bool> CreateOrderAsync(OrderCreateDTO orderCreateDTO);
+    Task CreateOrderAsync(OrderCreateDTO orderCreateDTO);
     Task<bool> UpdateOrderAsync(OrderUpdateDto orderUpdateDTO);
     Task<bool> DeleteOrderAsync(int oderId);
     Task<bool> CancleOrderAsync(int orderId);
     Task<List<OrderResponseDto>> GetOrdersAsync();
     Task<OrderResponseDto> GetOrderById(int orderId);
     Task<List<OrderResponseDto>> GetUserOrders();
-    Task<bool> ChangeOrderDestination(int orderId);
-    Task<bool> AssignOrder();
+    Task<bool> ChangeOrderDestination(int orderId, string destination);
 }

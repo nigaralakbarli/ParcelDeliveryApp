@@ -1,5 +1,7 @@
-﻿namespace OrderService.Dtos.Order;
+﻿namespace OrderMicroservice.Dtos.Order;
 
-public class OrderUpdateDto
-{
-}
+public record OrderUpdateDto(
+    int Id,
+    int UserId,
+    string AddressLine, 
+    double OrderTotal);

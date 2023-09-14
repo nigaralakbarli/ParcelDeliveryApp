@@ -1,6 +1,6 @@
-﻿namespace OrderService.Dtos.Order;
+﻿namespace OrderMicroservice.Dtos.Order;
 
 public record OrderCreateDTO(
     int Id,
-    int AddressId,
-    double TotalAmount);
+    string AddressLine,
+    double OrderTotal);

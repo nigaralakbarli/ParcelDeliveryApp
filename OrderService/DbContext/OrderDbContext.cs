@@ -1,6 +1,7 @@
-﻿namespace OrderService.DbContext;
+﻿namespace OrderMicroservice.DbContext;
+
 using Microsoft.EntityFrameworkCore;
-using OrderService.Models;
+using OrderMicroservice.Models;
 
 public class OrderDbContext : DbContext
 {
@@ -8,6 +9,14 @@ public class OrderDbContext : DbContext
     {
         optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=OrderDb;Username=postgres;Password=nigaR123");
     }
-        
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Order>()
+            .Property(a => a.OrderStatus)
+            .HasConversion<string>();
+
+        base.OnModelCreating(modelBuilder);
+    }
     public DbSet<Order> Orders => Set<Order>();
 }

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "DeliveryService": {
+    "DeliveryMicroservice": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7191;http://localhost:5127"
+      "applicationUrl": "https://localhost:7195;http://localhost:5231"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -31,8 +31,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:29206",
-      "sslPort": 44327
+      "applicationUrl": "http://localhost:46527",
+      "sslPort": 44368
     }
   }
 }

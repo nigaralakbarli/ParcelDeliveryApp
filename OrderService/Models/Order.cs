@@ -1,17 +1,12 @@
-﻿using OrderService.Enums;
+﻿using OrderMicroservice.Enums;
 
-namespace OrderService.Models;
+namespace OrderMicroservice.Models;
 
-public class Order 
+public class Order : EntityBase
 {
-    public int Id { get; set; } 
-    public int UserId { get; set; }
-    public string City { get; set; } = default!;
-    public int StreetNumber { get; set; }
+    public string UserId { get; set; } = default!;
     public string AddressLine { get; set; } = default!;
-    public string Region { get; set; } = default!;
-    public DateTime OrderDate { get; set; }
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
     public double OrderTotal { get; set; }
-    public OrderStatus OrderStatus { get; set; }
-    public double TotalAmount { get; set; }
+    public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
 }

@@ -1,4 +1,4 @@
-﻿namespace OrderMicroservice.Enums;
+﻿namespace DeliveryMicroservice.Enums;
 
 public enum OrderStatus
 {

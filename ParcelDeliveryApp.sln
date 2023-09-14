@@ -5,14 +5,14 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagementService", "UserManagementService\UserManagementService.csproj", "{52657107-95DB-4B50-988C-287D46CACE1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{32E9D768-37E3-4B8D-ACA8-6E36C4FDE851}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderMicroservice", "OrderService\OrderMicroservice.csproj", "{32E9D768-37E3-4B8D-ACA8-6E36C4FDE851}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F78BA2F8-FAD3-4C94-AAC7-900B408ADF30}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryService", "DeliveryService\DeliveryService.csproj", "{6D68EF6D-E71A-4408-A110-E711A7286C70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryMicroservice", "DeliveryMicroservice\DeliveryMicroservice.csproj", "{F95366DB-3962-4000-8003-781770736A55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,10 @@ Global
 		{32E9D768-37E3-4B8D-ACA8-6E36C4FDE851}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32E9D768-37E3-4B8D-ACA8-6E36C4FDE851}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32E9D768-37E3-4B8D-ACA8-6E36C4FDE851}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D68EF6D-E71A-4408-A110-E711A7286C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D68EF6D-E71A-4408-A110-E711A7286C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D68EF6D-E71A-4408-A110-E711A7286C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D68EF6D-E71A-4408-A110-E711A7286C70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F95366DB-3962-4000-8003-781770736A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95366DB-3962-4000-8003-781770736A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95366DB-3962-4000-8003-781770736A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95366DB-3962-4000-8003-781770736A55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

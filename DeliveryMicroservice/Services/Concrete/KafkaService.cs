@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
-using OrderMicroservice.Services.Abstraction;
+using DeliveryMicroservice.Services.Abstraction;
 
-namespace OrderMicroservice.Services.Concrete;
+namespace DeliveryMicroservice.Services.Concrete;
 
 public class KafkaService : IKafkaService
 {
@@ -32,7 +32,7 @@ public class KafkaService : IKafkaService
     public void Produce(string topic, string message)
     {
         _producer.Produce(topic, new Message<string, string> { Value = message });
-        
+
     }
 
     public void Consume(string topic)

@@ -1,4 +1,4 @@
-﻿namespace OrderMicroservice.Services.Abstraction;
+﻿namespace DeliveryMicroservice.Services.Abstraction;
 
 public interface IKafkaService
 {

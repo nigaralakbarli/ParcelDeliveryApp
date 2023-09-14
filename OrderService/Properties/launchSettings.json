@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "OrderService": {
+    "OrderMicroservice": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

@@ -1,13 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using UserManagementService.DbContext;
-using UserManagementService.Models;
-using UserManagementService.Options;
-using UserManagementService.Services.Abstraction;
-using UserManagementService.Services.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,18 +46,6 @@ builder.Services.AddSwaggerGen(swagger =>
                 });
 });
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<TokenOption>();
-
-builder.Services.Configure<TokenOption>(builder.Configuration.GetSection("TokenOption"));
-builder.Services.AddDbContext<UserManagementDbContext>();
-builder.Services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<UserManagementDbContext>()
-                .AddDefaultTokenProviders();
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -79,6 +61,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
         });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
