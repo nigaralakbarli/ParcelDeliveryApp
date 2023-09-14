@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using OrderMicroservice.Dtos.Order;
-using OrderMicroservice.Models;
+using Shared.Models;
 
 namespace OrderMicroservice.Mapper;
 
@@ -11,6 +11,5 @@ public class AutoMapper : Profile
         CreateMap<Order, OrderResponseDto>();
         CreateMap<OrderCreateDTO, Order>();
         CreateMap<OrderUpdateDto, Order>();
-
     }
 }

@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using OrderMicroservice.Dtos.Order;
-using OrderMicroservice.Models;
 using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Services.Abstraction;
-using System.Diagnostics.Metrics;
-using System.IdentityModel.Tokens.Jwt;
+using Shared.Models;
 using System.Security.Claims;
 
 namespace OrderMicroservice.Services.Concrete;
@@ -40,12 +38,12 @@ public class OrdersService : IOrdersService
     public async Task<bool> CancleOrderAsync(int orderId)
     {
         var order = await _orderRepository.GetByIdAsync(orderId);
-        if(order == null && order.OrderStatus == Enums.OrderStatus.Delivered)
+        if(order == null && order.OrderStatus == Shared.Enums.OrderStatus.Delivered)
         {
             return false;
         }
 
-        order.OrderStatus = Enums.OrderStatus.Cancelled;
+        order.OrderStatus = Shared.Enums.OrderStatus.Cancelled;
         await _orderRepository.UpdateAsync(order);
         return true;
         
@@ -54,7 +52,7 @@ public class OrdersService : IOrdersService
     public async Task<bool> ChangeOrderDestination(int orderId, string destination)
     {
         var order = await _orderRepository.GetByIdAsync(orderId);
-        if( order == null && order.OrderStatus == Enums.OrderStatus.Delivered)
+        if( order == null && order.OrderStatus == Shared.Enums.OrderStatus.Delivered)
         {
             return false;
         }

@@ -1,6 +1,6 @@
-﻿using OrderMicroservice.Enums;
+﻿using Shared.Enums;
 
-namespace OrderMicroservice.Models;
+namespace Shared.Models;
 
 public class Order : EntityBase
 {
@@ -8,5 +8,6 @@ public class Order : EntityBase
     public string AddressLine { get; set; } = default!;
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
     public double OrderTotal { get; set; }
+    public string CourierId { get; set; } = default!;
     public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
 }

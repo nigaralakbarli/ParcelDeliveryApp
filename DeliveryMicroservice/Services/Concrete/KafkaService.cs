@@ -13,7 +13,6 @@ public class KafkaService : IKafkaService
         var producerConfig = new ProducerConfig
         {
             BootstrapServers = bootstrapServers,
-            // Other producer configuration options
         };
 
         _producer = new ProducerBuilder<string, string>(producerConfig).Build();
@@ -23,12 +22,11 @@ public class KafkaService : IKafkaService
             BootstrapServers = bootstrapServers,
             GroupId = "your-consumer-group",
             AutoOffsetReset = AutoOffsetReset.Earliest,
-            // Other consumer configuration options
         };
 
         _consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
     }
-    //implement kafka topic here 
+
     public void Produce(string topic, string message)
     {
         _producer.Produce(topic, new Message<string, string> { Value = message });

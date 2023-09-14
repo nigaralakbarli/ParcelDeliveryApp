@@ -1,8 +1,8 @@
-﻿using DeliveryMicroservice.Models;
-using DeliveryMicroservice.Repositories.Abstraction;
+﻿using DeliveryMicroservice.Repositories.Abstraction;
+using Shared.Models;
 
 namespace DeliveryMicroservice.Repositories.Concrete;
 
-public class DeliveryRepository : BaseRepository<Delivery>, IDeliveryRepository
+public class DeliveryRepository : BaseRepository<Order>, IDeliveryRepository
 {
 }

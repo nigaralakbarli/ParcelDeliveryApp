@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderMicroservice.DbContext;
-using OrderMicroservice.Models;
 using OrderMicroservice.Repositories.Abstraction;
+using Shared.Models;
 using System.Linq.Expressions;
 
 namespace OrderMicroservice.Repositories.Concrete;

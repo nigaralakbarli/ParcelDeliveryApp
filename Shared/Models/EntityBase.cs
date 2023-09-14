@@ -1,4 +1,4 @@
-﻿namespace DeliveryMicroservice.Models;
+﻿namespace Shared.Models;
 
 public class EntityBase
 {

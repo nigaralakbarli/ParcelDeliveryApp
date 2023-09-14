@@ -1,4 +1,4 @@
-﻿using DeliveryMicroservice.Models;
+﻿using Shared.Models;
 using System.Linq.Expressions;
 
 namespace DeliveryMicroservice.Repositories.Abstraction;

@@ -1,7 +1,7 @@
 ﻿namespace OrderMicroservice.DbContext;
 
 using Microsoft.EntityFrameworkCore;
-using OrderMicroservice.Models;
+using Shared.Models;
 
 public class OrderDbContext : DbContext
 {

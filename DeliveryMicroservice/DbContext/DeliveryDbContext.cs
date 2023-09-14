@@ -1,5 +1,6 @@
 ﻿namespace DeliveryMicroservice.DbContext;
 using Microsoft.EntityFrameworkCore;
+using Shared.Models;
 
 public class DeliveryDbContext : DbContext
 {
@@ -8,6 +9,6 @@ public class DeliveryDbContext : DbContext
         optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=OrderDb;Username=postgres;Password=nigaR123");
     }
 
-    public DbSet<Delivery> Orders => Set<Order>();
+    public DbSet<Order> Orders => Set<Order>();
 
 }

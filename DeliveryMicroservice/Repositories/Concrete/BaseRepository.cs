@@ -1,7 +1,7 @@
 ﻿using DeliveryMicroservice.DbContext;
-using DeliveryMicroservice.Models;
 using DeliveryMicroservice.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
+using Shared.Models;
 using System.Linq.Expressions;
 
 namespace DeliveryMicroservice.Repositories.Concrete;
