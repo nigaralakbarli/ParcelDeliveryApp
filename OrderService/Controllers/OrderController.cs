@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrderMicroservice.Dtos.Order;
-using OrderMicroservice.Repositories.Concrete;
 using OrderMicroservice.Services.Abstraction;
+using Shared.Dtos.Order;
 
 namespace OrderMicroservice.Controllers
 {

@@ -1,4 +1,4 @@
-﻿using OrderMicroservice.Dtos.Order;
+﻿using Shared.Dtos.Order;
 
 namespace OrderMicroservice.Services.Abstraction;
 

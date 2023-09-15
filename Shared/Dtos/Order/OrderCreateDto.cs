@@ -1,4 +1,4 @@
-﻿namespace OrderMicroservice.Dtos.Order;
+﻿namespace Shared.Dtos.Order;
 
 public record OrderCreateDTO(
     int Id,

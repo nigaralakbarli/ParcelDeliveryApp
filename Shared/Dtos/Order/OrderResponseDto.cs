@@ -1,6 +1,4 @@
-﻿using OrderMicroservice.Enums;
-
-namespace OrderMicroservice.Dtos.Order;
+﻿namespace Shared.Dtos.Order;
 
 public record OrderResponseDto(
     int Id,

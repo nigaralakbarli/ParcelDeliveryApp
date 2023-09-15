@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using OrderMicroservice.Dtos.Order;
 using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Services.Abstraction;
+using Shared.Dtos.Order;
 using Shared.Models;
 using System.Security.Claims;
 
