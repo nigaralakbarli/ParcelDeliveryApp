@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using OrderMicroservice.Dtos.Order;
+using Shared.Dtos.Order;
 using Shared.Models;
 
 namespace OrderMicroservice.Mapper;

@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
+using OrderMicroservice.Models;
 using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Services.Abstraction;
 using Shared.Dtos.Order;
 using Shared.Models;
+using Shared.Services.Abstraction;
 using System.Security.Claims;
 
 namespace OrderMicroservice.Services.Concrete;
@@ -12,6 +15,7 @@ public class OrdersService : IOrdersService
     private readonly IOrderRepository _orderRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
+    
 
     public OrdersService(
         IOrderRepository orderRepository,
@@ -23,6 +27,16 @@ public class OrdersService : IOrdersService
         _mapper = mapper;
     }
 
+    //public void InitializeOrderStatusUpdateConsumer()
+    //{
+    //    _kafkaService.Consume("order-assignment", ProcessOrderAssignment);
+    //}
+    //private async void ProcessOrderAssignment(string message)
+    //{
+    //    var orderAssignment = JsonConvert.DeserializeObject<OrderAssignment>(message);
+
+    //    // Update the order status in your database
+    //}
     public async Task<OrderResponseDto> GetOrderById(int orderId)
     {
         var order = await _orderRepository.GetByIdAsync(orderId);

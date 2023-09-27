@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OrderMicroservice.DbContext;
 using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Repositories.Concrete;
 using OrderMicroservice.Services.Abstraction;
 using OrderMicroservice.Services.Concrete;
+using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,23 +68,42 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
         });
 
+builder.Services.AddDbContext<OrderDbContext>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 
 
 var app = builder.Build();
+
+await using var scope = app.Services.CreateAsyncScope();
+{
+    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -7,7 +7,7 @@ public class OrderDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=OrderDb;Username=postgres;Password=nigaR123");
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=order_db;User Id=postgres;Password=mypassword;");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,3 +20,4 @@ public class OrderDbContext : DbContext
     }
     public DbSet<Order> Orders => Set<Order>();
 }
+

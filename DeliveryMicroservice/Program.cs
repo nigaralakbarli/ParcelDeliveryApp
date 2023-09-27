@@ -1,3 +1,7 @@
+using DeliveryMicroservice.Repositories.Abstraction;
+using DeliveryMicroservice.Repositories.Concrete;
+using DeliveryMicroservice.Services.Abstraction;
+using DeliveryMicroservice.Services.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -63,6 +67,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -72,6 +88,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

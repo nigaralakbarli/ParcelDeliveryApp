@@ -2,6 +2,6 @@
 
 public interface IKafkaService
 {
-    void Produce(string topic, string message);
-    void Consume(string topic);
+    void PublishMessage(string topic, string key, string value);
+    void ConsumeMessages(string topic, Action<string> messageHandler);
 }

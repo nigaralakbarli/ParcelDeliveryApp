@@ -1,47 +1,59 @@
 ﻿using Confluent.Kafka;
 using Shared.Services.Abstraction;
+using System.Text;
 
 namespace Shared.Services.Concrete;
 
 public class KafkaService : IKafkaService
 {
-    private readonly IProducer<string, string> _producer;
-    private readonly IConsumer<string, string> _consumer;
+    private readonly IProducer<string, string> producer;
+    private readonly IConsumer<string, string> consumer;
 
     public KafkaService(string bootstrapServers)
     {
         var producerConfig = new ProducerConfig
         {
             BootstrapServers = bootstrapServers,
+            ClientId = "kafka-producer-client"
         };
 
-        _producer = new ProducerBuilder<string, string>(producerConfig).Build();
+        producer = new ProducerBuilder<string, string>(producerConfig).Build();
 
         var consumerConfig = new ConsumerConfig
         {
             BootstrapServers = bootstrapServers,
-            GroupId = "your-consumer-group",
+            GroupId = "kafka-consumer-group",
             AutoOffsetReset = AutoOffsetReset.Earliest,
         };
 
-        _consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
     }
 
-    public void Produce(string topic, string message)
+    public void PublishMessage(string topic, string key, string value)
     {
-        _producer.Produce(topic, new Message<string, string> { Value = message });
+        var message = new Message<string, string>
+        {
+            Key = key,
+            Value = value
+        };
 
+        producer.Produce(topic, message);
     }
 
-    public void Consume(string topic)
+    public void ConsumeMessages(string topic, Action<string> messageHandler)
     {
-        _consumer.Subscribe(topic);
+        consumer.Subscribe(topic);
 
         while (true)
         {
-            var consumeResult = _consumer.Consume();
-            Console.WriteLine($"Received message: {consumeResult.Message.Value}");
+            try
+            {
+                var consumeResult = consumer.Consume();
+                messageHandler(consumeResult.Message.Value);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error handling Kafka message: {ex.Message}");
+            }
         }
     }
-
 }
