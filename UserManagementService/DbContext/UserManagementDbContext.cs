@@ -8,6 +8,6 @@ public class UserManagementDbContext : IdentityDbContext<User, Role, string>
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Host=database1;Port=5432;Database=usermanagement_db;User Id=postgres;Password=mypassword;");
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=usermanagement_db;User Id=postgres;Password=mypassword;");
     }
 }

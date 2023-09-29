@@ -35,7 +35,6 @@ namespace OrderMicroservice.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CourierId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("OrderDate")
@@ -55,6 +54,43 @@ namespace OrderMicroservice.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Shared.Models.OrderStatusChange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChangeDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NewStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderStatusChange");
+                });
+
+            modelBuilder.Entity("Shared.Models.OrderStatusChange", b =>
+                {
+                    b.HasOne("Shared.Models.Order", null)
+                        .WithMany("StatusChanges")
+                        .HasForeignKey("OrderId");
+                });
+
+            modelBuilder.Entity("Shared.Models.Order", b =>
+                {
+                    b.Navigation("StatusChanges");
                 });
 #pragma warning restore 612, 618
         }

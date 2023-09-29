@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  service1:
+  usermanagementapi:
     container_name: UserManagementService
     build:
       context: .
@@ -9,10 +9,10 @@ services:
     ports:
       - "8001:80"
     depends_on:
-      - database1
+      - usermanagementdb
       - kafka
 
-  service2:
+  orderapi:
     container_name: OrderService
     build:
       context: .
@@ -20,10 +20,10 @@ services:
     ports:
       - "8002:80"
     depends_on:
-      - database2
+      - orderdb
       - kafka
 
-  service3:
+  deliveryapi:
     container_name: DeliveryMicroservice
     build:
       context: .
@@ -31,38 +31,52 @@ services:
     ports:
       - "8003:80"
     depends_on:
-      - database3
+      - deliverydb
       - kafka
 
-  database1:
+  apigateway:
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    ports:
+      - 8004:80
+
+  usermanagementdb:
     image: postgres:latest
     container_name: UsermanagementDb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: usermanagement_db
+    volumes:
+      - ./database1-data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - 5433:5432
 
-  database2:
+  orderdb:
     image: postgres:latest
     container_name: OrderDb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: order_db
+    volumes:
+      - ./database2-data:/var/lib/postgresql/data
     ports:
-      - 5433:5432
+      - 5434:5432
 
-  database3:
+  deliverydb:
     image: postgres:latest
     container_name: DeliveryDb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: delivery_db
+    volumes:
+      - ./database3-data:/var/lib/postgresql/data
     ports:
-      - 5434:5432
+      - 5435:5432
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest

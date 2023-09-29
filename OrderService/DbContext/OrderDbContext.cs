@@ -7,13 +7,17 @@ public class OrderDbContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=order_db;User Id=postgres;Password=mypassword;");
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5434;Database=order_db;User Id=postgres;Password=mypassword;");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Order>()
             .Property(a => a.OrderStatus)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<OrderStatusChange>()
+            .Property(a => a.NewStatus)
             .HasConversion<string>();
 
         base.OnModelCreating(modelBuilder);

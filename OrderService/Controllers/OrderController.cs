@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderMicroservice.Services.Abstraction;
 using Shared.Dtos.Order;
+using Shared.Enums;
 
 namespace OrderMicroservice.Controllers
 {
@@ -56,6 +57,16 @@ namespace OrderMicroservice.Controllers
         public async Task<IActionResult> CancleOrderAsync(int orderId)
         {
             if (await _ordersService.CancleOrderAsync(orderId))
+            {
+                return Ok("Successfully updated");
+            }
+            return NotFound();
+        }
+
+        [HttpPut("ChangeStatus")]
+        public async Task<IActionResult> ChangeOrderStatusAsync(int orderId, OrderStatus status)
+        {
+            if (await _ordersService.ChangeOrderStatusAsync(orderId, status))
             {
                 return Ok("Successfully updated");
             }

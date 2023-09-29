@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryMicroservice", "Del
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{7CA99936-9553-41B2-8D21-A859724BCADD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{F467D474-4B1B-4234-8C9C-F5550F8C334F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{C1CB0525-0014-453B-A6C7-8E01E1509EEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +40,10 @@ Global
 		{7CA99936-9553-41B2-8D21-A859724BCADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CA99936-9553-41B2-8D21-A859724BCADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CA99936-9553-41B2-8D21-A859724BCADD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F467D474-4B1B-4234-8C9C-F5550F8C334F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F467D474-4B1B-4234-8C9C-F5550F8C334F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F467D474-4B1B-4234-8C9C-F5550F8C334F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F467D474-4B1B-4234-8C9C-F5550F8C334F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,6 @@
-﻿namespace Shared.Dtos.Order;
+﻿using Shared.Models;
+
+namespace Shared.Dtos.Order;
 
 public record OrderResponseDto(
     int Id,
@@ -6,4 +8,5 @@ public record OrderResponseDto(
     string AddressLine,
     DateTime OrderDate,
     double OrderTotal,
-    string OrderStatus);
+    string OrderStatus,
+    List<OrderStatusChangeDto> StatusChanges);

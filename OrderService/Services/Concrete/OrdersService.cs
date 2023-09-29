@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using Newtonsoft.Json;
-using OrderMicroservice.Models;
 using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Services.Abstraction;
 using Shared.Dtos.Order;
+using Shared.Enums;
 using Shared.Models;
-using Shared.Services.Abstraction;
 using System.Security.Claims;
 
 namespace OrderMicroservice.Services.Concrete;
@@ -39,25 +37,33 @@ public class OrdersService : IOrdersService
     //}
     public async Task<OrderResponseDto> GetOrderById(int orderId)
     {
-        var order = await _orderRepository.GetByIdAsync(orderId);
+        var order = await _orderRepository.GetByIdIncludeAsync(orderId);
         return _mapper.Map<OrderResponseDto>(order);
     }
 
     public async Task<List<OrderResponseDto>> GetOrdersAsync()
     {
-        var orders = await _orderRepository.GetAllAsync();
+        var orders = await _orderRepository.GetAllIncludeAsync();
         return _mapper.Map<List<OrderResponseDto>>(orders);
     }
 
     public async Task<bool> CancleOrderAsync(int orderId)
     {
         var order = await _orderRepository.GetByIdAsync(orderId);
-        if(order == null && order.OrderStatus == Shared.Enums.OrderStatus.Delivered)
+        if(order == null && order.OrderStatus == OrderStatus.Delivered)
         {
             return false;
         }
 
-        order.OrderStatus = Shared.Enums.OrderStatus.Cancelled;
+        order.OrderStatus = OrderStatus.Cancelled;
+
+        var statusChange = new OrderStatusChange
+        {
+            NewStatus = OrderStatus.Cancelled,
+            ChangeDateTime = DateTime.UtcNow
+        };
+
+        order.StatusChanges.Add(statusChange);
         await _orderRepository.UpdateAsync(order);
         return true;
         
@@ -79,6 +85,12 @@ public class OrdersService : IOrdersService
     public async Task CreateOrderAsync(OrderCreateDTO orderCreateDTO)
     {
         var mapped = _mapper.Map<Order>(orderCreateDTO);
+        var initialStatusChange = new OrderStatusChange
+        {
+            NewStatus = OrderStatus.Pending,
+            ChangeDateTime = DateTime.UtcNow
+        };
+        mapped.StatusChanges = new List<OrderStatusChange> { initialStatusChange };
         mapped.UserId = await GetCurrentUserIdAsync();
         await _orderRepository.AddAsync(mapped);
     }
@@ -108,6 +120,26 @@ public class OrdersService : IOrdersService
         {
             _mapper.Map(orderUpdateDTO, order);
             await _orderRepository.UpdateAsync(order);
+            return true;
+        }
+        return false;
+    }
+
+    public async Task<bool> ChangeOrderStatusAsync(int orderId, OrderStatus status)
+    {
+        var order = await _orderRepository.GetByIdAsync(orderId);
+        if(order != null)
+        {
+            order.OrderStatus = status;
+            var statusChange = new OrderStatusChange
+            {
+                NewStatus = status,
+                ChangeDateTime = DateTime.UtcNow 
+            };
+
+            order.StatusChanges ??= new List<OrderStatusChange>();
+            order.StatusChanges.Add(statusChange);
+            await _orderRepository.UpdateAsync(order); 
             return true;
         }
         return false;

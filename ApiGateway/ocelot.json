@@ -1,0 +1,70 @@
+﻿{
+  "Routes": [
+    // UserManagement
+    {
+      "UpstreamPathTemplate": "/User/GetAll",
+      "UpstreamHttpMethod": ["Get"],
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "service1",
+          "Port": 80
+        }
+      ],
+      "DownstreamPathTemplate": "/User/GetAll"
+    }
+    //{ 
+    //  "UpstreamPathTemplate": "/User",
+    //  "UpstreamHttpMethod": [ "Put" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "service1",
+    //      "Port": 80
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/User/Update"
+    //},
+    //{
+    //  "UpstreamPathTemplate": "/User",
+    //  "UpstreamHttpMethod": [ "Delete" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "service1",
+    //      "Port": 80
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/User"
+    //},
+    //{
+    //  "UpstreamPathTemplate": "/User",
+    //  "UpstreamHttpMethod": [ "Put" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "service1",
+    //      "Port": 80
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/User/ChangePassword"
+    //},
+    //{
+    //  "UpstreamPathTemplate": "/User",
+    //  "UpstreamHttpMethod": [ "Put" ],
+    //  "DownstreamScheme": "http",
+    //  "DownstreamHostAndPorts": [
+    //    {
+    //      "Host": "service1",
+    //      "Port": 80
+    //    }
+    //  ],
+    //  "DownstreamPathTemplate": "/User/ResetPassword"
+    //}
+    //// OrderService
+    //// DeliveryService
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:8004"
+  }
+}

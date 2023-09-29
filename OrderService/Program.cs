@@ -89,11 +89,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-await using var scope = app.Services.CreateAsyncScope();
-{
-    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-    await db.Database.MigrateAsync();
-}
+//await using var scope = app.Services.CreateAsyncScope();
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+//    await db.Database.MigrateAsync();
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

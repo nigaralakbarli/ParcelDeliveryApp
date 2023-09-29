@@ -2,6 +2,7 @@
 
 namespace DeliveryMicroservice.Repositories.Abstraction;
 
-public interface IDeliveryRepository : IBaseRepository<Order>
+public interface IDeliveryRepository : IBaseRepository<Delivery>
 {
+
 }
