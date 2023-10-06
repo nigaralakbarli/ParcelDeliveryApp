@@ -7,16 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserManagementService", "Us
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderMicroservice", "OrderService\OrderMicroservice.csproj", "{32E9D768-37E3-4B8D-ACA8-6E36C4FDE851}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F78BA2F8-FAD3-4C94-AAC7-900B408ADF30}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeliveryMicroservice", "DeliveryMicroservice\DeliveryMicroservice.csproj", "{F95366DB-3962-4000-8003-781770736A55}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{7CA99936-9553-41B2-8D21-A859724BCADD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{C1CB0525-0014-453B-A6C7-8E01E1509EEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{C1CB0525-0014-453B-A6C7-8E01E1509EEF}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{C30B473F-18DC-457A-9A51-8DCD013090B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +41,10 @@ Global
 		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

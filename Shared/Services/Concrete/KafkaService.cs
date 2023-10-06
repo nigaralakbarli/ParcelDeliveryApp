@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 using Shared.Services.Abstraction;
 using System.Text;
 
@@ -8,6 +9,7 @@ public class KafkaService : IKafkaService
 {
     private readonly IProducer<string, string> producer;
     private readonly IConsumer<string, string> consumer;
+    private readonly AdminClientConfig adminClientConfig;
 
     public KafkaService(string bootstrapServers)
     {
@@ -26,6 +28,12 @@ public class KafkaService : IKafkaService
             AutoOffsetReset = AutoOffsetReset.Earliest,
         };
 
+        consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
+
+        adminClientConfig = new AdminClientConfig
+        {
+            BootstrapServers = bootstrapServers,
+        };
     }
 
     public void PublishMessage(string topic, string key, string value)
@@ -53,6 +61,29 @@ public class KafkaService : IKafkaService
             catch (Exception ex)
             {
                 Console.WriteLine($"Error handling Kafka message: {ex.Message}");
+            }
+        }
+    }
+
+    public async Task CreateTopicAsync(string topicName, int numPartitions, short replicationFactor)
+    {
+        using (var adminClient = new AdminClientBuilder(adminClientConfig).Build())
+        {
+            try
+            {
+                await adminClient.CreateTopicsAsync(new List<TopicSpecification>
+            {
+                new TopicSpecification
+                {
+                    Name = topicName,
+                    NumPartitions = numPartitions,
+                    ReplicationFactor = replicationFactor
+                }
+            });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occurred creating the topic {topicName}: {e.Message}");
             }
         }
     }

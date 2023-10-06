@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using UserManagementService.Dtos.User;
 using UserManagementService.Services.Abstraction;
 
@@ -12,13 +13,16 @@ namespace UserManagementService.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
+        private readonly ILogger<UserController> _logger;
 
         public UserController(
             IAuthService authService,
-            IUserService userService)
+            IUserService userService,
+            ILogger<UserController> logger)
         {
             _authService = authService;
             _userService = userService;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -30,15 +34,21 @@ namespace UserManagementService.Controllers
             {
                 return Ok(tokenResponse);
             }
+            _logger.Log(LogLevel.Information, $"{loginDto.Username} logged in");
+
+
             return NotFound("User not found");
+
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetUsers()
         {
             return Ok(await _userService.GetUsersAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -61,6 +71,7 @@ namespace UserManagementService.Controllers
             return Ok(await _userService.RegisterAsync(registrationDto));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("Update")]
         public async Task<IActionResult> UpdateUser(UserRequestDto userRequestDto)
         {
@@ -71,6 +82,7 @@ namespace UserManagementService.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> DeleteUser(string id)
         {
@@ -81,7 +93,7 @@ namespace UserManagementService.Controllers
             return NotFound();
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
         {
@@ -92,7 +104,7 @@ namespace UserManagementService.Controllers
             return NotFound();
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("ResetPassword")]
         public async Task<IActionResult> ResetPassword(string userName, string NewPassword)
         {

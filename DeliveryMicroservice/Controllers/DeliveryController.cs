@@ -39,16 +39,6 @@ public class DeliveryController : ControllerBase
         return NotFound();
     }
 
-    [HttpPut("SetDelivered")]
-    public async Task<IActionResult> SetDelivered(int orderId)
-    {
-        if (await _deliveryService.SetDelivered(orderId))
-        {
-            return Ok("Successfully updated");
-        }
-        return NotFound();
-    }
-
     [HttpPut("ChangeDeliveryStatus")]
     public async Task<IActionResult> ChangeDeliveryStatus(int deliveryId, DeliveryStatus status)
     {
@@ -57,5 +47,12 @@ public class DeliveryController : ControllerBase
             return Ok("Successfully updated");
         }
         return NotFound();
+    }
+
+    [HttpGet("OrdersTest")]
+    public async Task<IActionResult> GetOrders()
+    {
+        var orders = await _deliveryService.GetOrdersTest();
+        return Ok(orders);
     }
 }

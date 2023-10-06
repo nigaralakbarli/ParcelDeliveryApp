@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 using UserManagementService.DbContext;
 using UserManagementService.Models;
 using UserManagementService.Options;
 using UserManagementService.Services.Abstraction;
 using UserManagementService.Services.Concrete;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,18 +93,34 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
+Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .CreateLogger();
+
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddSerilog();
+});
+
+builder.Host.UseSerilog();
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+await using var scope = app.Services.CreateAsyncScope();
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<UserManagementDbContext>();
+    await db.Database.MigrateAsync();
 }
 
-app.UseCors();
+app.UseSwagger();
 
-app.UseHttpsRedirection();
+app.UseSwaggerUI();
+
+app.UseCors();
 
 app.UseAuthorization();
 

@@ -17,7 +17,6 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
     {
         _dbContext = new DeliveryDbContext();
     }
-
     public async Task<TEntity> GetByIdAsync(int id)
     {
         return await _dbContext.Set<TEntity>().FindAsync(id);

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using DeliveryMicroservice.Repositories.Abstraction;
 using DeliveryMicroservice.Services.Abstraction;
+using Newtonsoft.Json;
 using Shared.Dtos.Delivery;
 using Shared.Dtos.Order;
 using Shared.Enums;
 using Shared.Models;
+using Shared.Services.Abstraction;
 
 namespace DeliveryMicroservice.Services.Concrete;
 
@@ -13,20 +15,28 @@ public class DeliveryService : IDeliveryService
     private readonly IDeliveryRepository _deliveryRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly IMapper _mapper;
+    private readonly IKafkaService _kafkaService;
 
     public DeliveryService(
         IDeliveryRepository deliveryRepository,
         IOrderRepository orderRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IKafkaService kafkaService)
     {
         _deliveryRepository = deliveryRepository;
         _orderRepository = orderRepository;
         _mapper = mapper;
+        _kafkaService = kafkaService;
     }
     public async Task<bool> AssignOrderAsync(int orderId, string courierId)
     {
+        if (await IsCourierAssignedAsync(courierId))
+        {
+            return false;
+        }
+
         var order = await _orderRepository.GetByIdAsync(orderId);
-        if (order == null)
+        if (order == null || order.OrderStatus == OrderStatus.Cancelled)
         {
             return false;
         }
@@ -35,7 +45,13 @@ public class DeliveryService : IDeliveryService
         {
             OrderId = orderId,
             CourierId = courierId,
-            DeliveryStatus = DeliveryStatus.PendingPickup 
+            DeliveryStatus = DeliveryStatus.PendingPickup,
+            Coordinates = new Coordinates
+            {
+                Latitude = 0.0,
+                Longitude = 0.0
+            }
+
         };
 
         var initialStatusChange = new DeliveryStatusChange
@@ -59,8 +75,8 @@ public class DeliveryService : IDeliveryService
         {
             return false;
         }
-        delivery.DeliveryStatus = newStatus;
 
+        delivery.DeliveryStatus = newStatus;
         var statusChange = new DeliveryStatusChange
         {
             NewStatus = newStatus,
@@ -70,6 +86,22 @@ public class DeliveryService : IDeliveryService
         delivery.StatusChanges ??= new List<DeliveryStatusChange>();
         delivery.StatusChanges.Add(statusChange);
         await _deliveryRepository.UpdateAsync(delivery);
+
+        if (newStatus == DeliveryStatus.DeliveredSuccessfully)
+        {
+            var order = await _orderRepository.GetByIdAsync(delivery.OrderId);
+            if (order == null)
+            {
+                return false;
+            }
+
+            order.OrderStatus = OrderStatus.Delivered;
+
+            _kafkaService.PublishMessage("order-delivered", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
+            await _orderRepository.UpdateAsync(order);
+        }
+
         return true;
 
     }
@@ -83,39 +115,51 @@ public class DeliveryService : IDeliveryService
     public async Task<DeliveryResponseDto> GetDeliveryDetails(int deliveryId)
     {
         var delivery = await _deliveryRepository.GetByIdAsync(deliveryId);
-        return _mapper.Map<DeliveryResponseDto>(delivery);  
+        return _mapper.Map<DeliveryResponseDto>(delivery);
     }
 
-    public async Task<bool> SetDelivered(int orderId)
+    public async Task<List<Order>> GetOrdersTest()
     {
-        var order = await _orderRepository.GetByIdAsync(orderId);
-        if (order == null)
+        return (await _orderRepository.GetAllAsync()).ToList();
+    }
+
+    private async Task<bool> IsCourierAssignedAsync(string courierId)
+    {
+        var assignedOrders = await _orderRepository.FindAsync(o => o.CourierId == courierId);
+
+        if (assignedOrders == null || !assignedOrders.Any())
         {
             return false;
         }
 
-        var delivery = (await _deliveryRepository.FindAsync(d => d.OrderId == orderId)).FirstOrDefault();
-
-        if (delivery == null)
+        foreach (var order in assignedOrders)
         {
-            return false;
+            if (order.OrderStatus != OrderStatus.Delivered)
+            {
+                return true; 
+            }
         }
 
-        delivery.DeliveryStatus = DeliveryStatus.DeliveredSuccessfully;
-        var statusChange = new DeliveryStatusChange
-        {
-            NewStatus = DeliveryStatus.DeliveredSuccessfully,
-            ChangeDateTime = DateTime.UtcNow
-        };
-
-        delivery.StatusChanges ??= new List<DeliveryStatusChange>();
-        delivery.StatusChanges.Add(statusChange);
-        await _deliveryRepository.UpdateAsync(delivery);
+        return false; 
+    }
 
 
-        //Kafka
-        order.OrderStatus = OrderStatus.Delivered;
+    //Handlers
+    public async void OrderCreatedEventHandler(string message)
+    {
+        var order = JsonConvert.DeserializeObject<Order>(message);
+        await _orderRepository.AddAsync(order);
+    }
+
+    public async void OrderUpdateEventHandler(string message)
+    {
+        var order = JsonConvert.DeserializeObject<Order>(message);
         await _orderRepository.UpdateAsync(order);
-        return true;
+    }
+
+    public async void OrderDeleteEventHandler(string message)
+    {
+        var order = JsonConvert.DeserializeObject<Order>(message);
+        await _orderRepository.RemoveAsync(order);
     }
 }

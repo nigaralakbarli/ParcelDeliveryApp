@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Services.Abstraction;
 using Shared.Dtos.Order;
 using Shared.Enums;
 using Shared.Models;
+using Shared.Services.Abstraction;
+using Shared.Services.Concrete;
 using System.Security.Claims;
 
 namespace OrderMicroservice.Services.Concrete;
@@ -13,28 +16,21 @@ public class OrdersService : IOrdersService
     private readonly IOrderRepository _orderRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
-    
+    private readonly IKafkaService _kafkaService;
+
 
     public OrdersService(
         IOrderRepository orderRepository,
         IHttpContextAccessor httpContextAccessor,
-        IMapper mapper)
+        IMapper mapper,
+        IKafkaService kafkaService)
     {
         _orderRepository = orderRepository;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
+        _kafkaService = kafkaService;
     }
-
-    //public void InitializeOrderStatusUpdateConsumer()
-    //{
-    //    _kafkaService.Consume("order-assignment", ProcessOrderAssignment);
-    //}
-    //private async void ProcessOrderAssignment(string message)
-    //{
-    //    var orderAssignment = JsonConvert.DeserializeObject<OrderAssignment>(message);
-
-    //    // Update the order status in your database
-    //}
+    
     public async Task<OrderResponseDto> GetOrderById(int orderId)
     {
         var order = await _orderRepository.GetByIdIncludeAsync(orderId);
@@ -65,8 +61,10 @@ public class OrdersService : IOrdersService
 
         order.StatusChanges.Add(statusChange);
         await _orderRepository.UpdateAsync(order);
+
+        _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
         return true;
-        
     }
 
     public async Task<bool> ChangeOrderDestination(int orderId, string destination)
@@ -79,6 +77,9 @@ public class OrdersService : IOrdersService
 
         order.AddressLine = destination;
         await _orderRepository.UpdateAsync(order);
+
+        _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
         return true;    
     }
 
@@ -93,6 +94,8 @@ public class OrdersService : IOrdersService
         mapped.StatusChanges = new List<OrderStatusChange> { initialStatusChange };
         mapped.UserId = await GetCurrentUserIdAsync();
         await _orderRepository.AddAsync(mapped);
+
+        _kafkaService.PublishMessage("order-created", mapped.Id.ToString(), JsonConvert.SerializeObject(mapped));
     }
 
     public async Task<bool> DeleteOrderAsync(int oderId)
@@ -101,6 +104,9 @@ public class OrdersService : IOrdersService
         if (order != null)
         {
             await _orderRepository.RemoveAsync(order);
+
+            _kafkaService.PublishMessage("order-deleted", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
             return true;
         }
         return false;
@@ -120,6 +126,9 @@ public class OrdersService : IOrdersService
         {
             _mapper.Map(orderUpdateDTO, order);
             await _orderRepository.UpdateAsync(order);
+
+            _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
             return true;
         }
         return false;
@@ -139,7 +148,10 @@ public class OrdersService : IOrdersService
 
             order.StatusChanges ??= new List<OrderStatusChange>();
             order.StatusChanges.Add(statusChange);
-            await _orderRepository.UpdateAsync(order); 
+            await _orderRepository.UpdateAsync(order);
+
+            _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
             return true;
         }
         return false;
@@ -149,5 +161,11 @@ public class OrdersService : IOrdersService
     {
         return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
+
+    public async void OrderDeliveredEventHandler(string message)
+    {
+        var order = JsonConvert.DeserializeObject<Order>(message);
+        await _orderRepository.AddAsync(order);
+    }   
 
 }

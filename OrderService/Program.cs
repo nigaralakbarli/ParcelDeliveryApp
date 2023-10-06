@@ -7,6 +7,10 @@ using OrderMicroservice.Repositories.Abstraction;
 using OrderMicroservice.Repositories.Concrete;
 using OrderMicroservice.Services.Abstraction;
 using OrderMicroservice.Services.Concrete;
+using Serilog;
+using Shared.Models;
+using Shared.Services.Abstraction;
+using Shared.Services.Concrete;
 using System;
 using System.Text;
 
@@ -73,7 +77,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
-
+builder.Services.AddSingleton<IKafkaService, KafkaService>(provider =>
+{
+    return new KafkaService("kafka:9092");
+});
 
 builder.Services.AddCors(options =>
 {
@@ -85,27 +92,53 @@ builder.Services.AddCors(options =>
     });
 });
 
+Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .CreateLogger();
 
+builder.Services.AddLogging(loggingBuilder =>
+{
+    loggingBuilder.AddSerilog();
+});
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
-//await using var scope = app.Services.CreateAsyncScope();
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-//    await db.Database.MigrateAsync();
-//}
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+await using var scope = app.Services.CreateAsyncScope();
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    await db.Database.MigrateAsync();
+
+    var kafka = scope.ServiceProvider.GetRequiredService<IKafkaService>();
+
+    var order = scope.ServiceProvider.GetRequiredService<IOrdersService>();
+
+
+
+    kafka.CreateTopicAsync("order-created", 5, 1);
+    kafka.CreateTopicAsync("order-updated", 5, 1);
+    kafka.CreateTopicAsync("order-deleted", 5, 1);
+    kafka.CreateTopicAsync("order-status", 5, 1);
+
+
+    Task.Run(() => kafka.ConsumeMessages("order-status", order.OrderDeliveredEventHandler));
 
 }
 
+app.UseSwagger();
+
+app.UseSerilogRequestLogging();
+
+app.UseSwaggerUI();
+
 app.UseCors();
-app.UseHttpsRedirection();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UserManagementService.Dtos.Role;
@@ -34,6 +35,7 @@ namespace UserManagementService.Controllers
             return BadRequest($"Role with ID {id} not found");
         }
 
+
         [HttpGet("GetUserRoles")]
         public async Task<IActionResult> GetRolesByUser(string userName)
         {
@@ -44,6 +46,7 @@ namespace UserManagementService.Controllers
             }
             return BadRequest($"Username not found");
         }
+
 
         [HttpPost("Create")]
         public async Task<IActionResult> CreateRoleAsync(RoleDto roleDto)
@@ -59,6 +62,7 @@ namespace UserManagementService.Controllers
             return Ok("Role successful created");
         }
 
+   
         [HttpDelete]
         public async Task<IActionResult> DeleteRoleAsync(string id)
         {
@@ -69,6 +73,7 @@ namespace UserManagementService.Controllers
             return NotFound();
         }
 
+    
         [HttpPut("AddRoleToUser")]
         public async Task<IActionResult> AddRoleToUserAsync(UserRoleDto userRoleDto)
         {
@@ -79,6 +84,7 @@ namespace UserManagementService.Controllers
             return Ok("Roles added to user");
         }
 
+       
         [HttpPut("RemoveRoleFromUser")]
         public async Task<IActionResult> RemoveRoleFromUserAsync(UserRoleDto userRoleDto)
         {

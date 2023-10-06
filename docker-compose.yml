@@ -1,46 +1,59 @@
-version: '3.8'
+version: '3.4'
+
 services:
-
-  usermanagementapi:
-    container_name: UserManagementService
-    build:
-      context: .
-      dockerfile: UserManagementService/Dockerfile
-    ports:
-      - "8001:80"
-    depends_on:
-      - usermanagementdb
-      - kafka
-
-  orderapi:
-    container_name: OrderService
-    build:
-      context: .
-      dockerfile: OrderService/Dockerfile
-    ports:
-      - "8002:80"
-    depends_on:
-      - orderdb
-      - kafka
-
-  deliveryapi:
+  deliverymicroservice:
     container_name: DeliveryMicroservice
+    image: ${DOCKER_REGISTRY-}deliverymicroservice
     build:
       context: .
       dockerfile: DeliveryMicroservice/Dockerfile
-    ports:
-      - "8003:80"
+    volumes:
+      - delivery_logs:/app/logs
     depends_on:
       - deliverydb
       - kafka
+      - ordermicroservice
+    networks:
+      - parceldelivery
+
+  ordermicroservice:
+    container_name: OrderService
+    image: ${DOCKER_REGISTRY-}ordermicroservice
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    volumes:
+      - order_logs:/app/logs
+    depends_on:
+      - orderdb
+      - kafka
+    networks:
+      - parceldelivery
+
+  usermanagementservice:
+    container_name: UserManagementService
+    image: ${DOCKER_REGISTRY-}usermanagementservice
+    build:
+      context: .
+      dockerfile: UserManagementService/Dockerfile
+    volumes:
+      - usermanagement_logs:/app/logs 
+    depends_on:
+      - usermanagementdb
+      - kafka
+    networks:
+      - parceldelivery
 
   apigateway:
     container_name: api-gateway
+    image: ${DOCKER_REGISTRY-}apigateway
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
     ports:
       - 8004:80
+    networks:
+      - parceldelivery
 
   usermanagementdb:
     image: postgres:latest
@@ -50,9 +63,11 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: usermanagement_db
     volumes:
-      - ./database1-data:/var/lib/postgresql/data
+      - usermanagementdb_volume:/var/lib/postgresql/data
     ports:
       - 5433:5432
+    networks:
+      - parceldelivery
 
   orderdb:
     image: postgres:latest
@@ -62,10 +77,12 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: order_db
     volumes:
-      - ./database2-data:/var/lib/postgresql/data
+      - orderdb_volume:/var/lib/postgresql/data
     ports:
       - 5434:5432
-
+    networks:
+      - parceldelivery
+  
   deliverydb:
     image: postgres:latest
     container_name: DeliveryDb
@@ -74,19 +91,26 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: delivery_db
     volumes:
-      - ./database3-data:/var/lib/postgresql/data
+      - deliverydb_volume:/var/lib/postgresql/data
     ports:
       - 5435:5432
+    networks:
+      - parceldelivery
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
     ports:
       - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_log:/var/lib/zookeeper/log
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-
+    networks:
+      - parceldelivery
+  
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
@@ -94,11 +118,16 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:  "1"
+    networks:
+      - parceldelivery
 
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
@@ -112,5 +141,20 @@ services:
       KAFKA_BROKERCONNECT: "kafka:9092"
       KAFKA_PROPERTIES_BOOTSTRAPSERVERS: "kafka:9092"
       KAFKA_PROPERTIES_GROUPID: "kafdrop"
+    networks:
+      - parceldelivery
+
+volumes:
+  usermanagement_logs:
+  delivery_logs:
+  order_logs:
+  usermanagementdb_volume:
+  orderdb_volume:
+  deliverydb_volume:
+  zookeeper_data:
+  zookeeper_log:
+  kafka_data:
 
 
+networks:
+  parceldelivery:  

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using UserManagementService.Models;
 
@@ -8,6 +9,7 @@ public class UserManagementDbContext : IdentityDbContext<User, Role, string>
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5433;Database=usermanagement_db;User Id=postgres;Password=mypassword;");
+        optionsBuilder.UseNpgsql("Host=usermanagementdb; Port= 5432;Database=usermanagement_db;User Id=postgres;Password=mypassword;");
     }
+
 }
