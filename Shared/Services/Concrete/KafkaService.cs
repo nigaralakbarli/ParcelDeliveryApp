@@ -47,16 +47,20 @@ public class KafkaService : IKafkaService
         producer.Produce(topic, message);
     }
 
-    public void ConsumeMessages(string topic, Action<string> messageHandler)
+    public void ConsumeMessages(Dictionary<string, Action<string>> topicHandlers)
     {
-        consumer.Subscribe(topic);
+        List<string> topics = topicHandlers.Keys.ToList();
+        consumer.Subscribe(topics);
 
         while (true)
         {
             try
             {
                 var consumeResult = consumer.Consume();
-                messageHandler(consumeResult.Message.Value);
+                if (topicHandlers.TryGetValue(consumeResult.Topic, out var messageHandler))
+                {
+                    messageHandler(consumeResult.Message.Value);
+                }
             }
             catch (Exception ex)
             {

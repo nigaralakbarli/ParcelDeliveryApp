@@ -121,17 +121,8 @@ await using var scope = app.Services.CreateAsyncScope();
     topicHandlers["order-status"] = order.OrderDeliveredEventHandler;
     topicHandlers["order-assigned"] = order.OrderAssignedEventHandler;
 
-    foreach (var kvp in topicHandlers)
-    {
-        string topic = kvp.Key;
-        Action<string> handler = kvp.Value;
+    kafka.ConsumeMessages(topicHandlers);
 
-        Task.Run(() => kafka.ConsumeMessages(topic, handler));
-    }
-
-    //Task.Run(() => kafka.ConsumeMessages("order-status", order.OrderDeliveredEventHandler));
-
-    //Task.Run(() => kafka.ConsumeMessages("order-assigned", order.OrderAssignedEventHandler));
 }
 
 app.UseSwagger();
