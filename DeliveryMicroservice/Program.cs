@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Shared.Models;
 using Shared.Services.Abstraction;
 using Shared.Services.Concrete;
 using System.Text;
@@ -77,7 +78,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IDeliveryService, DeliveryService>();
-builder.Services.AddSingleton<IKafkaService, KafkaService>(provider =>
+builder.Services.AddScoped<IKafkaService, KafkaService>(provider =>
 {
     return new KafkaService("kafka:9092");
 });
@@ -115,18 +116,33 @@ await using var scope = app.Services.CreateAsyncScope();
     var kafka = scope.ServiceProvider.GetRequiredService<IKafkaService>();
     var delivery = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
 
+
+    var topicHandlers = new Dictionary<string, Action<string>>();
+
+    topicHandlers["order-created"] = delivery.OrderCreatedEventHandler;
+    topicHandlers["order-updated"] = delivery.OrderUpdateEventHandler;
+    topicHandlers["order-deleted"] = delivery.OrderDeleteEventHandler;
+
+    foreach (var kvp in topicHandlers)
+    {
+        string topic = kvp.Key;
+        Action<string> handler = kvp.Value;
+
+        Task.Run(() => kafka.ConsumeMessages(topic, handler));
+    }
+
     //Task.Run(() => kafka.ConsumeMessages("order-created", delivery.OrderCreatedEventHandler));
 
     //Task.Run(() => kafka.ConsumeMessages("order-updated", delivery.OrderUpdateEventHandler));
 
     //Task.Run(() => kafka.ConsumeMessages("order-deleted", delivery.OrderDeleteEventHandler));
 
-    Task.Run(() =>
-    {
-        kafka.ConsumeMessages("order-updated", delivery.OrderUpdateEventHandler);
-        kafka.ConsumeMessages("order-created", delivery.OrderCreatedEventHandler);
-        kafka.ConsumeMessages("order-deleted", delivery.OrderDeleteEventHandler);
-    });
+    //Task.Run(() =>
+    //{
+    //    kafka.ConsumeMessages("order-updated", delivery.OrderUpdateEventHandler);
+    //    kafka.ConsumeMessages("order-created", delivery.OrderCreatedEventHandler);
+    //    kafka.ConsumeMessages("order-deleted", delivery.OrderDeleteEventHandler);
+    //});
 }
 
 app.UseSwagger();

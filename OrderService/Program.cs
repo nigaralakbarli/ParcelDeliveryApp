@@ -78,10 +78,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 
-builder.Services.AddSingleton<IKafkaService, KafkaService>(provider =>
-{
-    return new KafkaService("kafka:9092");
-});
+
 
 builder.Services.AddCors(options =>
 {
@@ -104,10 +101,11 @@ builder.Services.AddLogging(loggingBuilder =>
 
 builder.Host.UseSerilog();
 
+builder.Services.AddScoped<IKafkaService, KafkaService>(provider =>
+{
+    return new KafkaService("kafka:9092");
+});
 var app = builder.Build();
-
-
-// Configure the HTTP request pipeline.
 
 await using var scope = app.Services.CreateAsyncScope();
 {
@@ -118,10 +116,22 @@ await using var scope = app.Services.CreateAsyncScope();
 
     var order = scope.ServiceProvider.GetRequiredService<IOrdersService>();
 
+    var topicHandlers = new Dictionary<string, Action<string>>();
 
-    Task.Run(() => kafka.ConsumeMessages("order-status", order.OrderDeliveredEventHandler));
+    topicHandlers["order-status"] = order.OrderDeliveredEventHandler;
+    topicHandlers["order-assigned"] = order.OrderAssignedEventHandler;
 
-    Task.Run(() => kafka.ConsumeMessages("order-assigned", order.OrderAssignedEventHandler));
+    foreach (var kvp in topicHandlers)
+    {
+        string topic = kvp.Key;
+        Action<string> handler = kvp.Value;
+
+        Task.Run(() => kafka.ConsumeMessages(topic, handler));
+    }
+
+    //Task.Run(() => kafka.ConsumeMessages("order-status", order.OrderDeliveredEventHandler));
+
+    //Task.Run(() => kafka.ConsumeMessages("order-assigned", order.OrderAssignedEventHandler));
 }
 
 app.UseSwagger();
