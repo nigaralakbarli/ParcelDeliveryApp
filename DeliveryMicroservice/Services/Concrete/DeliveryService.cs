@@ -28,44 +28,52 @@ public class DeliveryService : IDeliveryService
         _mapper = mapper;
         _kafkaService = kafkaService;
     }
+
+
+    public async Task<List<DeliveryResponseDto>> GetDeliveriesAsync()
+    {
+        var delivery = await _deliveryRepository.GetAllIncludeAsync();
+        return _mapper.Map<List<DeliveryResponseDto>>(delivery);
+    }
     public async Task<bool> AssignOrderAsync(int orderId, string courierId)
     {
-        if (await IsCourierAssignedAsync(courierId))
+        var assigned = await IsCourierAssignedAsync(courierId);
+        if (!assigned)
         {
-            return false;
-        }
-
-        var order = await _orderRepository.GetByIdAsync(orderId);
-        if (order == null || order.OrderStatus == OrderStatus.Cancelled)
-        {
-            return false;
-        }
-
-        var delivery = new Delivery
-        {
-            OrderId = orderId,
-            CourierId = courierId,
-            DeliveryStatus = DeliveryStatus.PendingPickup,
-            Coordinates = new Coordinates
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order == null || order.OrderStatus == OrderStatus.Cancelled)
             {
-                Latitude = 0.0,
-                Longitude = 0.0
+                return false;
             }
 
-        };
+            var delivery = new Delivery
+            {
+                OrderId = orderId,
+                CourierId = courierId,
+                DeliveryStatus = DeliveryStatus.PendingPickup,
+                Coordinates = new Coordinates
+                {
+                    Latitude = 0.0,
+                    Longitude = 0.0
+                }
 
-        var initialStatusChange = new DeliveryStatusChange
-        {
-            NewStatus = DeliveryStatus.PendingPickup,
-            ChangeDateTime = DateTime.UtcNow
-        };
+            };
 
-        delivery.StatusChanges = new List<DeliveryStatusChange> { initialStatusChange };
-    
-        await _deliveryRepository.AddAsync(delivery);
-        order.CourierId = courierId;
-        await _orderRepository.UpdateAsync(order);
-        return true;
+            var initialStatusChange = new DeliveryStatusChange
+            {
+                NewStatus = DeliveryStatus.PendingPickup,
+                ChangeDateTime = DateTime.UtcNow
+            };
+
+            delivery.StatusChanges = new List<DeliveryStatusChange> { initialStatusChange };
+
+            await _deliveryRepository.AddAsync(delivery);
+            order.CourierId = courierId;
+            _kafkaService.PublishMessage("order-assigned", order.Id.ToString(), JsonConvert.SerializeObject(order));
+            await _orderRepository.UpdateAsync(order);
+            return true;
+        }  
+        return false;
     }
 
     public async Task<bool> ChangeDeliveryStatus(int deliveryId, DeliveryStatus newStatus)
@@ -97,7 +105,7 @@ public class DeliveryService : IDeliveryService
 
             order.OrderStatus = OrderStatus.Delivered;
 
-            _kafkaService.PublishMessage("order-delivered", order.Id.ToString(), JsonConvert.SerializeObject(order));
+            _kafkaService.PublishMessage("order-status", order.Id.ToString(), JsonConvert.SerializeObject(order));
 
             await _orderRepository.UpdateAsync(order);
         }
@@ -114,7 +122,7 @@ public class DeliveryService : IDeliveryService
 
     public async Task<DeliveryResponseDto> GetDeliveryDetails(int deliveryId)
     {
-        var delivery = await _deliveryRepository.GetByIdAsync(deliveryId);
+        var delivery = await _deliveryRepository.GetByIdIncludeAsync(deliveryId);
         return _mapper.Map<DeliveryResponseDto>(delivery);
     }
 
@@ -162,4 +170,5 @@ public class DeliveryService : IDeliveryService
         var order = JsonConvert.DeserializeObject<Order>(message);
         await _orderRepository.RemoveAsync(order);
     }
+
 }

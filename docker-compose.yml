@@ -12,7 +12,7 @@ services:
     depends_on:
       - deliverydb
       - kafka
-      - ordermicroservice
+      - kafkaservice
     networks:
       - parceldelivery
 
@@ -27,6 +27,7 @@ services:
     depends_on:
       - orderdb
       - kafka
+      - kafkaservice
     networks:
       - parceldelivery
 
@@ -40,6 +41,16 @@ services:
       - usermanagement_logs:/app/logs 
     depends_on:
       - usermanagementdb
+      - kafka
+    networks:
+      - parceldelivery
+
+  kafkaservice:
+    image: ${DOCKER_REGISTRY-}kafkaservice
+    build:
+      context: .
+      dockerfile: KafkaService/Dockerfile
+    depends_on:
       - kafka
     networks:
       - parceldelivery
@@ -102,9 +113,6 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
-    volumes:
-      - zookeeper_data:/var/lib/zookeeper/data
-      - zookeeper_log:/var/lib/zookeeper/log
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -118,8 +126,6 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
-    volumes:
-      - kafka_data:/var/lib/kafka/data
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
@@ -151,9 +157,6 @@ volumes:
   usermanagementdb_volume:
   orderdb_volume:
   deliverydb_volume:
-  zookeeper_data:
-  zookeeper_log:
-  kafka_data:
 
 
 networks:

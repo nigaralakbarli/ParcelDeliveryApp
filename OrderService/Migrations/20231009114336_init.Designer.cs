@@ -12,7 +12,7 @@ using OrderMicroservice.DbContext;
 namespace OrderMicroservice.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20231003103931_init")]
+    [Migration("20231009114336_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

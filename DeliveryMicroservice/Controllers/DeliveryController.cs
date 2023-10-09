@@ -36,7 +36,7 @@ public class DeliveryController : ControllerBase
         {
             return Ok("Successfully assigned");
         }
-        return NotFound();
+        return BadRequest();
     }
 
     [HttpPut("ChangeDeliveryStatus")]

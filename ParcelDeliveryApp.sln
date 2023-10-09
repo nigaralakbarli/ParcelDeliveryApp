@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{C1CB0525-0014-453B-A6C7-8E01E1509EEF}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{C30B473F-18DC-457A-9A51-8DCD013090B7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaService", "KafkaService\KafkaService.csproj", "{47B4E19F-9AF9-4377-A391-734E94923D95}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{9E187CF4-4A91-4734-92BF-3F07A62136DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +43,14 @@ Global
 		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1CB0525-0014-453B-A6C7-8E01E1509EEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C30B473F-18DC-457A-9A51-8DCD013090B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47B4E19F-9AF9-4377-A391-734E94923D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47B4E19F-9AF9-4377-A391-734E94923D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47B4E19F-9AF9-4377-A391-734E94923D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47B4E19F-9AF9-4377-A391-734E94923D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E187CF4-4A91-4734-92BF-3F07A62136DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E187CF4-4A91-4734-92BF-3F07A62136DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E187CF4-4A91-4734-92BF-3F07A62136DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E187CF4-4A91-4734-92BF-3F07A62136DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

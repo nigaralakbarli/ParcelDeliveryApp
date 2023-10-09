@@ -11,13 +11,16 @@ public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;
+    private readonly ILogger<UserService> _logger;
 
     public UserService(
         UserManager<User> userManager,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<UserService> logger)
     {
         _userManager = userManager;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<bool> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
@@ -29,6 +32,7 @@ public class UserService : IUserService
         }
 
         var result = await _userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, changePasswordDto.NewPassword);
+        _logger.Log(LogLevel.Information, $"{changePasswordDto.UserName} password changed");
         return result.Succeeded;
     }
 

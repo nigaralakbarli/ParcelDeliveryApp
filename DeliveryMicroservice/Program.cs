@@ -115,9 +115,18 @@ await using var scope = app.Services.CreateAsyncScope();
     var kafka = scope.ServiceProvider.GetRequiredService<IKafkaService>();
     var delivery = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
 
-    Task.Run(() => kafka.ConsumeMessages("order-created", delivery.OrderCreatedEventHandler));
-    Task.Run(() => kafka.ConsumeMessages("order-updated", delivery.OrderUpdateEventHandler));
-    Task.Run(() => kafka.ConsumeMessages("order-deleted", delivery.OrderDeleteEventHandler));
+    //Task.Run(() => kafka.ConsumeMessages("order-created", delivery.OrderCreatedEventHandler));
+
+    //Task.Run(() => kafka.ConsumeMessages("order-updated", delivery.OrderUpdateEventHandler));
+
+    //Task.Run(() => kafka.ConsumeMessages("order-deleted", delivery.OrderDeleteEventHandler));
+
+    Task.Run(() =>
+    {
+        kafka.ConsumeMessages("order-updated", delivery.OrderUpdateEventHandler);
+        kafka.ConsumeMessages("order-created", delivery.OrderCreatedEventHandler);
+        kafka.ConsumeMessages("order-deleted", delivery.OrderDeleteEventHandler);
+    });
 }
 
 app.UseSwagger();

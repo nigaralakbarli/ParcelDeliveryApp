@@ -7,6 +7,7 @@ namespace DeliveryMicroservice.Services.Abstraction;
 
 public interface IDeliveryService
 {
+    Task<List<DeliveryResponseDto>> GetDeliveriesAsync();  
     Task<bool> AssignOrderAsync(int orderId, string courierId);
     Task<bool> ChangeDeliveryStatus(int deliveryId, DeliveryStatus status); 
     Task<List<OrderResponseDto>> GetCourierOrders(string courierId);    

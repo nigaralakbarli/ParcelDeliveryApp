@@ -15,4 +15,5 @@ public interface IOrdersService
     Task<List<OrderResponseDto>> GetUserOrders();
     Task<bool> ChangeOrderDestination(int orderId, string destination);
     void OrderDeliveredEventHandler(string message);
+    void OrderAssignedEventHandler(string message);
 }

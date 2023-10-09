@@ -160,12 +160,18 @@ public class OrdersService : IOrdersService
     private async Task<string> GetCurrentUserIdAsync()
     {
         return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    }
+    }   
 
     public async void OrderDeliveredEventHandler(string message)
     {
         var order = JsonConvert.DeserializeObject<Order>(message);
-        await _orderRepository.AddAsync(order);
-    }   
+        await ChangeOrderStatusAsync(order.Id, order.OrderStatus);
+    }
+
+    public async void OrderAssignedEventHandler(string message)
+    {
+        var order = JsonConvert.DeserializeObject<Order>(message);
+        await _orderRepository.UpdateAsync(order);
+    }
 
 }

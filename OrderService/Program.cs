@@ -77,6 +77,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
+
 builder.Services.AddSingleton<IKafkaService, KafkaService>(provider =>
 {
     return new KafkaService("kafka:9092");
@@ -118,15 +119,9 @@ await using var scope = app.Services.CreateAsyncScope();
     var order = scope.ServiceProvider.GetRequiredService<IOrdersService>();
 
 
-
-    kafka.CreateTopicAsync("order-created", 5, 1);
-    kafka.CreateTopicAsync("order-updated", 5, 1);
-    kafka.CreateTopicAsync("order-deleted", 5, 1);
-    kafka.CreateTopicAsync("order-status", 5, 1);
-
-
     Task.Run(() => kafka.ConsumeMessages("order-status", order.OrderDeliveredEventHandler));
 
+    Task.Run(() => kafka.ConsumeMessages("order-assigned", order.OrderAssignedEventHandler));
 }
 
 app.UseSwagger();

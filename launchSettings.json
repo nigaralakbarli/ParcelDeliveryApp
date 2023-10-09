@@ -7,7 +7,8 @@
         "deliverymicroservice": "StartDebugging",
         "ordermicroservice": "StartDebugging",
         "usermanagementservice": "StartDebugging",
-        "apigateway": "StartDebugging"
+        "apigateway": "StartDebugging",
+        "kafkaservice": "StartDebugging"
       }
     }
   }
