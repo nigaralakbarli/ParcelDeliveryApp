@@ -2,6 +2,6 @@
 
 namespace OrderMicroservice.Repositories.Abstraction;
 
-public interface IOrderRepository : IBaseRepository<Order>
+public interface IOrderStatusChangeRepository : IBaseRepository<OrderStatusChange>
 {
 }

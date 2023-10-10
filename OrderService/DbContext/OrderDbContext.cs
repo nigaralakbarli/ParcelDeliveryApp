@@ -23,5 +23,6 @@ public class OrderDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderStatusChange> OrderStatusChanges => Set<OrderStatusChange>();
 }
 

@@ -24,11 +24,18 @@ await using var scope = app.Services.CreateAsyncScope();
 
     var order = scope.ServiceProvider.GetRequiredService<IKafkaService>();
 
+
+    // Delivery Microservice
+    kafka.CreateTopicAsync("order-delivered", 5, 1);
+    kafka.CreateTopicAsync("order-assigned", 5, 1);
+
+    // Order Microservice
     kafka.CreateTopicAsync("order-created", 5, 1);
     kafka.CreateTopicAsync("order-updated", 5, 1);
     kafka.CreateTopicAsync("order-deleted", 5, 1);
-    kafka.CreateTopicAsync("order-assigned", 5, 1);
-    kafka.CreateTopicAsync("order-status", 5, 1); 
+    kafka.CreateTopicAsync("order-status", 5, 1);
+    kafka.CreateTopicAsync("order-destination", 5, 1);
+    kafka.CreateTopicAsync("order-canceled", 5, 1);
 
 }
 

@@ -25,6 +25,21 @@ namespace DeliveryMicroservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DeliveryStatusChanges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DeliveryId = table.Column<int>(type: "integer", nullable: false),
+                    NewStatus = table.Column<string>(type: "text", nullable: false),
+                    ChangeDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryStatusChanges", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -64,72 +79,19 @@ namespace DeliveryMicroservice.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "OrderStatusChange",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    NewStatus = table.Column<int>(type: "integer", nullable: false),
-                    ChangeDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    OrderId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderStatusChange", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderStatusChange_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DeliveryStatusChange",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    NewStatus = table.Column<string>(type: "text", nullable: false),
-                    ChangeDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    DeliveryId = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeliveryStatusChange", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DeliveryStatusChange_Deliveries_DeliveryId",
-                        column: x => x.DeliveryId,
-                        principalTable: "Deliveries",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Deliveries_CoordinatesId",
                 table: "Deliveries",
                 column: "CoordinatesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DeliveryStatusChange_DeliveryId",
-                table: "DeliveryStatusChange",
-                column: "DeliveryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderStatusChange_OrderId",
-                table: "OrderStatusChange",
-                column: "OrderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DeliveryStatusChange");
-
-            migrationBuilder.DropTable(
-                name: "OrderStatusChange");
-
-            migrationBuilder.DropTable(
                 name: "Deliveries");
+
+            migrationBuilder.DropTable(
+                name: "DeliveryStatusChanges");
 
             migrationBuilder.DropTable(
                 name: "Orders");

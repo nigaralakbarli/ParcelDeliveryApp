@@ -77,6 +77,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IDeliveryStatusChangeRepository, DeliveryStatusChangeRepository>();
 builder.Services.AddScoped<IDeliveryService, DeliveryService>();
 builder.Services.AddScoped<IKafkaService, KafkaService>(provider =>
 {
@@ -117,11 +118,15 @@ await using var scope = app.Services.CreateAsyncScope();
     var delivery = scope.ServiceProvider.GetRequiredService<IDeliveryService>();
 
 
-    var topicHandlers = new Dictionary<string, Action<string>>();
-
-    topicHandlers["order-created"] = delivery.OrderCreatedEventHandler;
-    topicHandlers["order-updated"] = delivery.OrderUpdateEventHandler;
-    topicHandlers["order-deleted"] = delivery.OrderDeleteEventHandler;
+    var topicHandlers = new Dictionary<string, Action<string>>
+    {
+        { "order-created", delivery.OrderCreatedEventHandler },
+        { "order-updated", delivery.OrderUpdateEventHandler },
+        { "order-deleted", delivery.OrderDeleteEventHandler },
+        { "order-status", delivery.OrderStatusEventHandler },
+        { "order-destination", delivery.OrderDestinationEventHandler },
+        { "order-canceled", delivery.OrderCanceledEventHandler }
+    };
 
     kafka.ConsumeMessages(topicHandlers);
 }

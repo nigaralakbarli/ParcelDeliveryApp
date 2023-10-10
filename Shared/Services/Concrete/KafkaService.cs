@@ -52,21 +52,26 @@ public class KafkaService : IKafkaService
         List<string> topics = topicHandlers.Keys.ToList();
         consumer.Subscribe(topics);
 
-        while (true)
+        Task.Run(() =>
         {
-            try
+            while (true)
             {
-                var consumeResult = consumer.Consume();
-                if (topicHandlers.TryGetValue(consumeResult.Topic, out var messageHandler))
+                try
                 {
-                    messageHandler(consumeResult.Message.Value);
+                    var consumeResult = consumer.Consume();
+                    string topic = consumeResult.Topic;
+
+                    if (topicHandlers.ContainsKey(topic))
+                    {
+                        topicHandlers[topic](consumeResult.Message.Value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error handling Kafka message: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error handling Kafka message: {ex.Message}");
-            }
-        }
+        });
     }
 
     public async Task CreateTopicAsync(string topicName, int numPartitions, short replicationFactor)

@@ -6,5 +6,4 @@ public record DeliveryResponseDto(
     int Id,
     string UserId,
     string DeliveryStatus,
-    Coordinates Coordinates,
-    List<DeliveryStatusChangeDto> StatusChanges);
+    Coordinates Coordinates);

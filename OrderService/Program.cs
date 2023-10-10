@@ -76,6 +76,7 @@ builder.Services.AddDbContext<OrderDbContext>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderStatusChangeRepository, OrderStatusChangeRepository>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 
@@ -116,10 +117,11 @@ await using var scope = app.Services.CreateAsyncScope();
 
     var order = scope.ServiceProvider.GetRequiredService<IOrdersService>();
 
-    var topicHandlers = new Dictionary<string, Action<string>>();
-
-    topicHandlers["order-status"] = order.OrderDeliveredEventHandler;
-    topicHandlers["order-assigned"] = order.OrderAssignedEventHandler;
+    var topicHandlers = new Dictionary<string, Action<string>>
+    {
+        { "order-delivered", order.OrderDeliveredEventHandler },
+        { "order-assigned", order.OrderAssignedEventHandler },
+    };
 
     kafka.ConsumeMessages(topicHandlers);
 

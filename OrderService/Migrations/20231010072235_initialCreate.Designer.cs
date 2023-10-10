@@ -12,8 +12,8 @@ using OrderMicroservice.DbContext;
 namespace OrderMicroservice.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20231009114336_init")]
-    partial class init
+    [Migration("20231010072235_initialCreate")]
+    partial class initialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -73,26 +73,12 @@ namespace OrderMicroservice.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderStatusChange");
-                });
-
-            modelBuilder.Entity("Shared.Models.OrderStatusChange", b =>
-                {
-                    b.HasOne("Shared.Models.Order", null)
-                        .WithMany("StatusChanges")
-                        .HasForeignKey("OrderId");
-                });
-
-            modelBuilder.Entity("Shared.Models.Order", b =>
-                {
-                    b.Navigation("StatusChanges");
+                    b.ToTable("OrderStatusChanges");
                 });
 #pragma warning restore 612, 618
         }

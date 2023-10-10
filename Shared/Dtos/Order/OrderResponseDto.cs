@@ -8,5 +8,4 @@ public record OrderResponseDto(
     string AddressLine,
     DateTime OrderDate,
     double OrderTotal,
-    string OrderStatus,
-    List<OrderStatusChangeDto> StatusChanges);
+    string OrderStatus);

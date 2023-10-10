@@ -23,4 +23,5 @@ public class DeliveryDbContext : DbContext
     }
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<Delivery> Deliveries => Set<Delivery>();
+    public DbSet<DeliveryStatusChange> DeliveryStatusChanges => Set<DeliveryStatusChange>();
 }

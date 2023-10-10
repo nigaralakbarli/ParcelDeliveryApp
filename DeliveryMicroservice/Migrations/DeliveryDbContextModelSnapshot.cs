@@ -81,7 +81,7 @@ namespace DeliveryMicroservice.Migrations
                     b.Property<DateTime>("ChangeDateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("DeliveryId")
+                    b.Property<int>("DeliveryId")
                         .HasColumnType("integer");
 
                     b.Property<string>("NewStatus")
@@ -90,9 +90,7 @@ namespace DeliveryMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeliveryId");
-
-                    b.ToTable("DeliveryStatusChange");
+                    b.ToTable("DeliveryStatusChanges");
                 });
 
             modelBuilder.Entity("Shared.Models.Order", b =>
@@ -128,30 +126,6 @@ namespace DeliveryMicroservice.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Shared.Models.OrderStatusChange", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ChangeDateTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("NewStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderStatusChange");
-                });
-
             modelBuilder.Entity("Shared.Models.Delivery", b =>
                 {
                     b.HasOne("Shared.Models.Coordinates", "Coordinates")
@@ -161,30 +135,6 @@ namespace DeliveryMicroservice.Migrations
                         .IsRequired();
 
                     b.Navigation("Coordinates");
-                });
-
-            modelBuilder.Entity("Shared.Models.DeliveryStatusChange", b =>
-                {
-                    b.HasOne("Shared.Models.Delivery", null)
-                        .WithMany("StatusChanges")
-                        .HasForeignKey("DeliveryId");
-                });
-
-            modelBuilder.Entity("Shared.Models.OrderStatusChange", b =>
-                {
-                    b.HasOne("Shared.Models.Order", null)
-                        .WithMany("StatusChanges")
-                        .HasForeignKey("OrderId");
-                });
-
-            modelBuilder.Entity("Shared.Models.Delivery", b =>
-                {
-                    b.Navigation("StatusChanges");
-                });
-
-            modelBuilder.Entity("Shared.Models.Order", b =>
-                {
-                    b.Navigation("StatusChanges");
                 });
 #pragma warning restore 612, 618
         }

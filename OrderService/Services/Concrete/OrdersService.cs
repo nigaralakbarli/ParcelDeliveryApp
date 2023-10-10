@@ -14,6 +14,7 @@ namespace OrderMicroservice.Services.Concrete;
 public class OrdersService : IOrdersService
 {
     private readonly IOrderRepository _orderRepository;
+    private readonly IOrderStatusChangeRepository _orderStatusChangeRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IMapper _mapper;
     private readonly IKafkaService _kafkaService;
@@ -21,11 +22,13 @@ public class OrdersService : IOrdersService
 
     public OrdersService(
         IOrderRepository orderRepository,
+        IOrderStatusChangeRepository orderStatusChangeRepository,
         IHttpContextAccessor httpContextAccessor,
         IMapper mapper,
         IKafkaService kafkaService)
     {
         _orderRepository = orderRepository;
+        _orderStatusChangeRepository = orderStatusChangeRepository;
         _httpContextAccessor = httpContextAccessor;
         _mapper = mapper;
         _kafkaService = kafkaService;
@@ -33,13 +36,13 @@ public class OrdersService : IOrdersService
     
     public async Task<OrderResponseDto> GetOrderById(int orderId)
     {
-        var order = await _orderRepository.GetByIdIncludeAsync(orderId);
+        var order = await _orderRepository.GetByIdAsync(orderId);
         return _mapper.Map<OrderResponseDto>(order);
     }
 
     public async Task<List<OrderResponseDto>> GetOrdersAsync()
     {
-        var orders = await _orderRepository.GetAllIncludeAsync();
+        var orders = await _orderRepository.GetAllAsync();
         return _mapper.Map<List<OrderResponseDto>>(orders);
     }
 
@@ -52,18 +55,17 @@ public class OrdersService : IOrdersService
         }
 
         order.OrderStatus = OrderStatus.Cancelled;
+        await _orderRepository.UpdateAsync(order);
+        _kafkaService.PublishMessage("order-canceled", order.Id.ToString(), JsonConvert.SerializeObject(order));
 
         var statusChange = new OrderStatusChange
         {
+            OrderId = order.Id,
             NewStatus = OrderStatus.Cancelled,
             ChangeDateTime = DateTime.UtcNow
         };
 
-        order.StatusChanges.Add(statusChange);
-        await _orderRepository.UpdateAsync(order);
-
-        _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
-
+        await _orderStatusChangeRepository.AddAsync(statusChange);
         return true;
     }
 
@@ -78,7 +80,7 @@ public class OrdersService : IOrdersService
         order.AddressLine = destination;
         await _orderRepository.UpdateAsync(order);
 
-        _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
+        _kafkaService.PublishMessage("order-destination", order.Id.ToString(), JsonConvert.SerializeObject(order));
 
         return true;    
     }
@@ -86,14 +88,16 @@ public class OrdersService : IOrdersService
     public async Task CreateOrderAsync(OrderCreateDTO orderCreateDTO)
     {
         var mapped = _mapper.Map<Order>(orderCreateDTO);
+        mapped.UserId = await GetCurrentUserIdAsync();
+        await _orderRepository.AddAsync(mapped);
+
         var initialStatusChange = new OrderStatusChange
         {
+            OrderId = mapped.Id,
             NewStatus = OrderStatus.Pending,
             ChangeDateTime = DateTime.UtcNow
         };
-        mapped.StatusChanges = new List<OrderStatusChange> { initialStatusChange };
-        mapped.UserId = await GetCurrentUserIdAsync();
-        await _orderRepository.AddAsync(mapped);
+        await _orderStatusChangeRepository.AddAsync(initialStatusChange);
 
         _kafkaService.PublishMessage("order-created", mapped.Id.ToString(), JsonConvert.SerializeObject(mapped));
     }
@@ -140,18 +144,19 @@ public class OrdersService : IOrdersService
         if(order != null)
         {
             order.OrderStatus = status;
+            await _orderRepository.UpdateAsync(order);
+
+
+            _kafkaService.PublishMessage("order-status", order.Id.ToString(), JsonConvert.SerializeObject(order));
+
             var statusChange = new OrderStatusChange
             {
+                OrderId = order.Id,
                 NewStatus = status,
                 ChangeDateTime = DateTime.UtcNow 
             };
 
-            order.StatusChanges ??= new List<OrderStatusChange>();
-            order.StatusChanges.Add(statusChange);
-            await _orderRepository.UpdateAsync(order);
-
-            _kafkaService.PublishMessage("order-updated", order.Id.ToString(), JsonConvert.SerializeObject(order));
-
+            await _orderStatusChangeRepository.AddAsync(statusChange);
             return true;
         }
         return false;

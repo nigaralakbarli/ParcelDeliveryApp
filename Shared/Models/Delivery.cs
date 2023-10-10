@@ -9,6 +9,5 @@ public class Delivery : EntityBase
     public DeliveryStatus DeliveryStatus { get; set; }
     public Coordinates Coordinates { get; set; } = default!;
 
-    public List<DeliveryStatusChange> StatusChanges { get; set; } = new List<DeliveryStatusChange>();
 
 }

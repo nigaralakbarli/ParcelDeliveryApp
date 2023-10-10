@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace OrderMicroservice.Migrations
 {
-    public partial class init : Migration
+    public partial class initialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,38 +29,28 @@ namespace OrderMicroservice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderStatusChange",
+                name: "OrderStatusChanges",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrderId = table.Column<int>(type: "integer", nullable: false),
                     NewStatus = table.Column<string>(type: "text", nullable: false),
-                    ChangeDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    OrderId = table.Column<int>(type: "integer", nullable: true)
+                    ChangeDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderStatusChange", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderStatusChange_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id");
+                    table.PrimaryKey("PK_OrderStatusChanges", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderStatusChange_OrderId",
-                table: "OrderStatusChange",
-                column: "OrderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "OrderStatusChange");
+                name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "OrderStatusChanges");
         }
     }
 }

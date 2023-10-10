@@ -11,5 +11,4 @@ public class Order : EntityBase
     public string? CourierId { get; set; } = default!;
     public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
 
-    public List<OrderStatusChange> StatusChanges { get; set; } = new List<OrderStatusChange>();
 }
